@@ -1,0 +1,23 @@
+{
+  "name": "gns-demo",
+  "version": "1.0.0",
+  "description": "My super Nuxt.js project",
+  "author": "Alexey",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "@openzeppelin/gsn-provider": "^0.1.7",
+    "@openzeppelin/network": "^0.2.9",
+    "ethereumjs-wallet": "^0.6.3",
+    "nuxt": "^2.0.0",
+    "nuxt-buefy": "^0.3.2",
+    "truffle-hdwallet-provider": "^1.0.17",
+    "web3": "^1.2.1"
+  },
+  "devDependencies": {}
+}

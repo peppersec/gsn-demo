@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@openzeppelin/cli": "^2.5.3",
-    "@openzeppelin/gsn-provider": "git+https://github.com/peppersec/openzeppelin-gsn-provider.git#b6e93f2461e39b46f1bb0f74ecd26636a4bf5261",
+    "@openzeppelin/gsn-provider": "^0.1.8",
     "@openzeppelin/network": "^0.2.9",
     "bn-chai": "^1.0.1",
     "chai": "^4.2.0",

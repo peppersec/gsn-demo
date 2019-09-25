@@ -90,8 +90,9 @@ contract('Counter', accounts => {
                 [ '0x15163f70d3c051ca52c44727793f2110f0fb032c62558bb97dc4d806203e39c2',
                   '0x2f9ca4dbaa092015f21cf0625eb46fbf4a00dff94f8a2988287567560eb0f5f0',
                   '0x000000000000000000000000972c2188db25a0ca95e2d000a129fb9d2bba4e2c' ] }
-            const tx = await gsnCounter.methods.withdrawViaRelayer(pi_a, pi_b, pi_c, publicSignals).send({ from: account.address })
-            console.log('tx', tx)
+            const { events } = await gsnCounter.methods.withdrawViaRelayer(pi_a, pi_b, pi_c, publicSignals).send({ from: account.address })
+            // console.log('tx', events)
+            events.PostRelayCall.returnValues.recipient.should.be.equal('0x972c2188dB25A0Ca95e2D000A129FB9D2bbA4E2C')
         })
     })
 

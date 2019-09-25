@@ -11,6 +11,7 @@ contract Counter is GSNRecipient {
 
   event Withdraw(address who);
   event PostRelayCall(uint actualCharge, bytes context, address recipient);
+  event CallData(bytes encodedFunction);
 
   function withdrawViaRelayer(uint256[2] memory a, uint256[2][2] memory b, uint256[2] memory c, uint256[3] memory input) public {
     emit Withdraw(address(input[2]));
@@ -19,15 +20,25 @@ contract Counter is GSNRecipient {
   function acceptRelayedCall(
     address relay,
     address from,
-    bytes calldata encodedFunction,
+    bytes memory encodedFunction,
     uint256 transactionFee,
     uint256 gasPrice,
     uint256 gasLimit,
     uint256 nonce,
-    bytes calldata approvalData,
+    bytes memory approvalData,
     uint256 maxPossibleCharge
-  ) external view returns (uint256, bytes memory) {
-    return _approveRelayedCall();
+  ) public view returns (uint256, bytes memory) {
+    // if (!compareBytesWithSelector(encodedFunction, this.withdrawViaRelayer.selector)) {
+    //   return (2, "Only withdrawViaRelayer can be called");
+    // }
+    bytes memory recipient;
+    assembly {
+      let dataPointer := add(encodedFunction, 32)
+      let recipientPointer := mload(add(dataPointer, 324)) // 4 + (8 * 32) + (32) + (32) == selector + proof + root + nullifier
+      mstore(recipient, 32) // save array length
+      mstore(add(recipient, 32), recipientPointer) // save recipient address
+    }
+    return (0, recipient);
   }
 
   // this func is called by RelayerHub right before calling a target func
@@ -39,12 +50,19 @@ contract Counter is GSNRecipient {
     // IRelayHub relayHub = IRelayHub(getHubAddr());
     address payable recipient;
     assembly {
-      recipient := sload(add(context, 324)) // 4 + (8 * 32) + (32) + (32) == selector + proof + root + nullifier
+      recipient := mload(add(context, 32))
     }
     emit PostRelayCall(actualCharge, context, recipient);
 
     // recipient.transfer(mixDenomination - actualCharge);
     // relayHub.depositFor.value(actualCharge)(address(this));
     // or we can send actualCharge somewhere else...
+  }
+
+  function compareBytesWithSelector(bytes memory data, bytes4 sel) internal pure returns (bool) {
+    return data[0] == sel[0]
+        && data[1] == sel[1]
+        && data[2] == sel[2]
+        && data[3] == sel[3];
   }
 }
